@@ -2,7 +2,7 @@
 
 Chet-GPT is a small cooking helper for families who do not know what to cook today. The user enters ingredients they already have at home, chooses a cooking style, and the app suggests Burmese home recipes.
 
-The app can use AI through OpenRouter. If no API key is available, it still returns local fallback recipe suggestions so the app remains usable during development.
+The app can use AI through direct integration with Google Gemini. If no API key is available, it still returns local fallback recipe suggestions so the app remains usable during development.
 
 ## Purpose
 
@@ -20,7 +20,7 @@ The app can use AI through OpenRouter. If no API key is available, it still retu
 - shadcn/ui style components
 - Base UI for select behavior
 - lucide-react icons
-- OpenRouter SDK for AI recipe generation
+- Google Gen AI SDK for AI recipe generation
 - Vitest for unit tests
 - ESLint with the Next.js config
 
@@ -30,7 +30,7 @@ The app can use AI through OpenRouter. If no API key is available, it still retu
 2. The frontend sends the ingredients and selected style to `POST /api/recipes`.
 3. The API validates the request and parses the ingredient text.
 4. The use case calls a recipe generator.
-5. If `OPENROUTER_API_KEY` is set, the app asks OpenRouter for recipe JSON.
+5. If `GEMINI_API_KEY` is set, the app asks Google Gemini for recipe JSON.
 6. If the AI call fails or no API key is set, the app returns local Burmese recipe suggestions.
 
 ## Setup
@@ -44,12 +44,12 @@ npm install
 Create `.env.local` for real AI results:
 
 ```bash
-OPENROUTER_API_KEY=your_openrouter_key_here
-OPENROUTER_MODEL=meta-llama/llama-3.3-70b-instruct:free
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-2.5-flash
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-`OPENROUTER_MODEL` and `NEXT_PUBLIC_APP_URL` are optional. The app has defaults for both.
+`GEMINI_MODEL` and `NEXT_PUBLIC_APP_URL` are optional. The app has defaults for both.
 
 ## Run Locally
 
@@ -83,7 +83,7 @@ npm test
 - `src/components/ui/` contains reusable UI components.
 - `src/features/recipes/domain/` contains recipe types and ingredient parsing.
 - `src/features/recipes/application/` contains the recipe generation use case and interface.
-- `src/features/recipes/infrastructure/` contains OpenRouter, AI output parsing, error fallback, and local recipe generators.
+- `src/features/recipes/infrastructure/` contains Google Gemini AI integration, AI output parsing, error fallback, and local recipe generators.
 - `src/features/recipes/presentation/` contains the recipe planner UI.
 - `src/lib/` contains shared helpers.
 - `tests/` contains Vitest tests for recipe logic and API configuration.
@@ -95,7 +95,7 @@ npm test
 - Cooking style selection.
 - Burmese recipe cards.
 - Cook time, difficulty, matching ingredients, missing ingredients, steps, and tips.
-- OpenRouter AI recipe generation.
+- Google Gemini AI recipe generation.
 - Local fallback recipes when AI is unavailable.
 - Request size, content type, JSON, and ingredient validation in the API.
-- Unit tests for parsing, local generation, AI output cleanup, OpenRouter behavior, and route config.
+- Unit tests for parsing, local generation, AI output cleanup, Gemini behavior, and route config.

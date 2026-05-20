@@ -10,7 +10,7 @@ Use these systems:
 - React 19
 - Tailwind CSS 4
 - shadcn/ui latest version
-- OpenRouter for AI recipe generation
+- Google Gen AI for AI recipe generation
 - Vitest for focused unit tests
 
 Please always follow SOLID principles and Clean Code Architecture.
@@ -28,10 +28,10 @@ Generate output in simple English and avoid complicated wording.
 - Added Clean Architecture style recipe modules:
   - Domain types and parsing in `src/features/recipes/domain/`.
   - Recipe generation use case and generator interface in `src/features/recipes/application/`.
-  - OpenRouter, AI JSON parsing, AI error fallback, and local recipe generation in `src/features/recipes/infrastructure/`.
-- Added OpenRouter AI recipe generation using `@openrouter/sdk`.
+  - Google Gemini AI, AI JSON parsing, AI error fallback, and local recipe generation in `src/features/recipes/infrastructure/`.
+- Added direct Google Gemini AI recipe generation using `@google/genai` with strict responseSchema.
 - Added local recipe fallback when no API key exists or the AI request fails.
-- Added tests in `tests/` for ingredient parsing, local recipe generation, OpenRouter fallback behavior, AI output parsing, and route configuration.
+- Added tests in `tests/` for ingredient parsing, local recipe generation, Gemini fallback behavior, AI output parsing, and route configuration.
 
 ## Project Structure & Module Organization
 
@@ -69,12 +69,12 @@ Keep this section synchronized with `package.json` so contributors can rely on i
 Use `.env.local` for local secrets:
 
 ```bash
-OPENROUTER_API_KEY=your_openrouter_key_here
-OPENROUTER_MODEL=meta-llama/llama-3.3-70b-instruct:free
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-2.5-flash
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-Only `OPENROUTER_API_KEY` is required for real AI responses. Without it, the app uses local fallback recipes.
+Only `GEMINI_API_KEY` is required for real AI responses. Without it, the app uses local fallback recipes.
 
 ## Coding Style & Naming Conventions
 
@@ -89,14 +89,6 @@ Add or keep a formatter such as Prettier and a linter such as ESLint before acce
 Vitest is configured for focused unit tests. For React component behavior tests, add React Testing Library when needed. Name tests after the unit under test, such as `ingredient-parser.test.ts` or `local-recipe-generator.test.ts`.
 
 Cover user-visible behavior, data transformations, API validation, AI output parsing, fallback behavior, and regression fixes. Add or update tests whenever a change alters behavior.
-
-## Code Review Workflow
-
-After completing any implementation task:
-
-1. Run `opencode run "Review the changes I just made. List issues or say READY_TO_COMMIT"`
-2. If issues are found, fix them and repeat step 1
-3. Only stop when OpenCode responds with READY_TO_COMMIT
 
 ## Commit & Pull Request Guidelines
 

@@ -24,6 +24,7 @@ export class GenerateRecipesUseCase {
     return this.recipeGenerator.generate({
       ingredients,
       style: normalizeStyle(request.style),
+      model: request.model,
     });
   }
 }

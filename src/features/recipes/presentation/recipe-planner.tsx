@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
+import axios from "axios";
 import {
   ChevronRight,
   Clock3,
@@ -40,6 +41,13 @@ import type {
   RecipeSuggestion,
 } from "@/features/recipes/domain/recipe";
 
+interface AIModel {
+  id: string;
+  name: string;
+  provider: string;
+  description: string;
+}
+
 const quickIngredients = [
   "ကြက်သား",
   "ကြက်ဥ",
@@ -74,6 +82,33 @@ export function RecipePlanner() {
   const [result, setResult] = useState<RecipeResult | null>(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [models, setModels] = useState<AIModel[]>([]);
+  const [selectedModel, setSelectedModel] = useState<string>("");
+
+  useEffect(() => {
+    async function loadModels() {
+      try {
+        const response = await axios.get<AIModel[]>("/models.json");
+        setModels(response.data);
+        if (response.data.length > 0) {
+          setSelectedModel(response.data[0].id);
+        }
+      } catch (err) {
+        console.error("Failed to load models via Axios:", err);
+        const defaultModels = [
+          {
+            id: "gemini-2.5-flash",
+            name: "Gemini 2.5 Flash",
+            provider: "Google AI",
+            description: "Fast and lightweight model, optimized for speed and efficiency."
+          }
+        ];
+        setModels(defaultModels);
+        setSelectedModel(defaultModels[0].id);
+      }
+    }
+    loadModels();
+  }, []);
 
   const parsedIngredients = useMemo(
     () => parseIngredients(ingredients),
@@ -97,7 +132,7 @@ export function RecipePlanner() {
       const response = await fetch("/api/recipes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ingredients, style }),
+        body: JSON.stringify({ ingredients, style, model: selectedModel }),
         signal: controller.signal,
       });
       const data = await response.json();
@@ -111,7 +146,7 @@ export function RecipePlanner() {
       setError(
         requestError instanceof DOMException &&
           requestError.name === "AbortError"
-          ? "အချိန်ကြာသွားပါသည်။ ပိုမြန်သော OpenRouter model တစ်ခုဖြင့် ပြန်စမ်းပါ။"
+          ? "အချိန်ကြာသွားပါသည်။ ပိုမြန်သော Gemini model တစ်ခုဖြင့် ပြန်စမ်းပါ။"
           : requestError instanceof Error
             ? requestError.message
             : "ဟင်းချက်နည်း ရှာမရပါ။",
@@ -123,7 +158,7 @@ export function RecipePlanner() {
   }
 
   function addIngredient(ingredient: string) {
-    if (parsedIngredients.includes(ingredient)) {
+    if (parsedIngredients.includes(ingredient.toLowerCase())) {
       return;
     }
 
@@ -134,28 +169,37 @@ export function RecipePlanner() {
     );
   }
 
+  function removeIngredient(ingredientToRemove: string) {
+    const updated = parsedIngredients
+      .filter((item) => item !== ingredientToRemove)
+      .join("၊ ");
+    setIngredients(updated);
+  }
+
   return (
     <main className="min-h-dvh overflow-x-hidden bg-[#f8f6ed] text-[#252417]">
       <AppHeader />
 
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-5 sm:py-5 lg:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-4 sm:gap-6 sm:px-6 sm:py-6 lg:gap-8 lg:px-8 lg:py-8">
         <HeroPanel ingredientCount={parsedIngredients.length} />
 
-        <div className="grid min-w-0 gap-3 sm:gap-4 lg:grid-cols-[minmax(320px,420px)_minmax(0,1fr)] lg:items-start">
-          <aside className="min-w-0 lg:sticky lg:top-20">
-            <IngredientPanel
-              ingredients={ingredients}
-              parsedIngredients={parsedIngredients}
-              style={style}
-              error={error}
-              isLoading={isLoading}
-              canSubmit={canSubmit}
-              onIngredientsChange={setIngredients}
-              onStyleChange={setStyle}
-              onIngredientAdd={addIngredient}
-              onSubmit={handleSubmit}
-            />
-          </aside>
+        <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10">
+          <IngredientPanel
+            ingredients={ingredients}
+            parsedIngredients={parsedIngredients}
+            style={style}
+            error={error}
+            isLoading={isLoading}
+            canSubmit={canSubmit}
+            onIngredientsChange={setIngredients}
+            onStyleChange={setStyle}
+            onIngredientAdd={addIngredient}
+            onIngredientRemove={removeIngredient}
+            onSubmit={handleSubmit}
+            models={models}
+            selectedModel={selectedModel}
+            onModelChange={setSelectedModel}
+          />
 
           <ResultsSection result={result} />
         </div>
@@ -167,7 +211,7 @@ export function RecipePlanner() {
 function AppHeader() {
   return (
     <header className="sticky top-0 z-20 border-b border-[#d9d0b8] bg-[#fffdf6]/95 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-5 lg:px-8">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-4 sm:h-16 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-3">
           <div className="relative size-10 shrink-0 overflow-hidden rounded-lg bg-[#f1d36a] ring-1 ring-[#2f3b1f]/20">
             <Image
@@ -188,9 +232,9 @@ function AppHeader() {
             </h1>
           </div>
         </div>
-        <Badge className="h-8 shrink-0 rounded-lg border border-[#2f3b1f]/15 bg-[#f1d36a] px-3 font-black text-[#252417] hover:bg-[#f1d36a]">
+        <Badge className="h-8 shrink-0 rounded-lg border border-[#2f3b1f]/15 bg-[#f1d36a] px-2.5 sm:px-3 font-black text-[#252417] hover:bg-[#f1d36a]">
           <Sparkles className="size-3.5" aria-hidden="true" />
-          AI Chef
+          <span className="hidden min-[400px]:inline ml-1.5">AI Chef</span>
         </Badge>
       </div>
     </header>
@@ -201,7 +245,7 @@ function HeroPanel({ ingredientCount }: { ingredientCount: number }) {
   return (
     <section className="overflow-hidden rounded-lg border border-[#cfc5aa] bg-[#f1d36a] text-[#252417] shadow-sm">
       <div className="h-2 bg-[#2f3b1f]" />
-      <div className="grid min-w-0 gap-3 p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-5 lg:p-6">
+      <div className="grid min-w-0 gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-6 lg:p-8">
         <div className="min-w-0 space-y-3 sm:space-y-4">
           <Badge className="h-7 rounded-lg border border-[#2f3b1f]/15 bg-[#fffdf6] px-2.5 font-black text-[#2f3b1f] hover:bg-[#fffdf6]">
             <Flame className="size-3.5" aria-hidden="true" />
@@ -226,7 +270,7 @@ function HeroPanel({ ingredientCount }: { ingredientCount: number }) {
           </div>
         </div>
 
-        <div className="hidden min-w-56 items-center gap-3 rounded-lg border border-[#2f3b1f]/15 bg-[#fffdf6] p-3 text-[#252417] shadow-sm min-[560px]:flex">
+        <div className="hidden min-w-56 items-center gap-3 rounded-lg border border-[#2f3b1f]/15 bg-[#fffdf6] p-3 text-[#252417] shadow-sm sm:flex">
           <div className="relative size-16 shrink-0 overflow-hidden rounded-lg bg-[#f8f6ed]">
             <Image
               src="/chet-gpt.png"
@@ -260,7 +304,11 @@ function IngredientPanel({
   onIngredientsChange,
   onStyleChange,
   onIngredientAdd,
+  onIngredientRemove,
   onSubmit,
+  models,
+  selectedModel,
+  onModelChange,
 }: {
   ingredients: string;
   parsedIngredients: string[];
@@ -271,10 +319,14 @@ function IngredientPanel({
   onIngredientsChange: (value: string) => void;
   onStyleChange: (value: RecipeStyle) => void;
   onIngredientAdd: (ingredient: string) => void;
+  onIngredientRemove: (ingredient: string) => void;
   onSubmit: () => void;
+  models: AIModel[];
+  selectedModel: string;
+  onModelChange: (value: string) => void;
 }) {
   return (
-    <section className="min-w-0 rounded-lg border border-[#d9d0b8] bg-[#fffdf6] p-3 shadow-sm sm:p-4">
+    <section className="min-w-0 rounded-lg border border-[#d9d0b8] bg-[#fffdf6] p-4 shadow-sm sm:p-5 lg:p-6">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-lg font-black">သင့်မီးဖိုချောင်</h2>
@@ -303,14 +355,14 @@ function IngredientPanel({
 
         <div className="space-y-2">
           <p className="text-sm font-black text-[#252417]">Popular items</p>
-          <div className="grid grid-cols-2 gap-2 min-[420px]:grid-cols-3 lg:grid-cols-2">
+          <div className="grid grid-cols-2 gap-2 min-[420px]:grid-cols-3 sm:grid-cols-4 lg:grid-cols-8">
             {quickIngredients.map((ingredient) => (
               <Button
                 key={ingredient}
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-10 min-w-0 justify-start rounded-lg border-[#d9d0b8] bg-[#fffdf6] px-3 font-bold text-[#34311f] shadow-none hover:border-[#b8992f] hover:bg-[#f4e7a7] hover:text-[#252417]"
+                className="h-10 min-w-0 justify-start rounded-lg border-[#d9d0b8] bg-[#fffdf6] px-2 sm:px-3 font-bold text-[#34311f] gap-1.5 shadow-none hover:border-[#b8992f] hover:bg-[#f4e7a7] hover:text-[#252417]"
                 onClick={() => onIngredientAdd(ingredient)}
               >
                 <Plus className="size-3.5 shrink-0" aria-hidden="true" />
@@ -320,9 +372,12 @@ function IngredientPanel({
           </div>
         </div>
 
-        <SelectedIngredients ingredients={parsedIngredients} />
+        <SelectedIngredients
+          ingredients={parsedIngredients}
+          onRemove={onIngredientRemove}
+        />
 
-        <div className="grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_auto] lg:grid-cols-1">
+        <div className="grid min-w-0 gap-3 sm:grid-cols-2">
           <div className="space-y-2">
             <label className="text-sm font-bold" htmlFor="style">
               ချက်ချင်တဲ့ပုံစံ
@@ -347,22 +402,48 @@ function IngredientPanel({
             </Select>
           </div>
 
-          <Button
-            type="button"
-            className="h-11 w-full rounded-lg border border-[#2f3b1f]/20 bg-[#f1d36a] px-4 text-base font-black text-[#252417] shadow-sm hover:bg-[#e3c245] sm:self-end lg:w-full"
-            onClick={onSubmit}
-            disabled={!canSubmit}
-          >
-            {isLoading ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-            ) : (
-              <Search className="size-4" aria-hidden="true" />
-            )}
-            <span className="truncate">
-              {isLoading ? "ရှာနေသည်..." : "ဟင်းရှာမယ်"}
-            </span>
-          </Button>
+          <div className="space-y-2">
+            <label className="text-sm font-bold" htmlFor="model">
+              သုံးမည့် AI Model
+            </label>
+            <Select
+              value={selectedModel}
+              onValueChange={(val) => val && onModelChange(val)}
+            >
+              <SelectTrigger
+                id="model"
+                className="h-11 w-full rounded-lg border-[#d9d0b8] bg-[#fbf8ee] font-bold shadow-none focus:ring-[#b8992f]/25"
+              >
+                <SelectValue>
+                  {models.find((m) => m.id === selectedModel)?.name || "Model ရွေးချယ်ပါ"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {models.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>
+                    {m.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
+
+        <Button
+          type="button"
+          className="h-11 w-full rounded-lg border border-[#2f3b1f]/20 bg-[#f1d36a] px-4 text-base font-black text-[#252417] shadow-sm hover:bg-[#e3c245]"
+          onClick={onSubmit}
+          disabled={!canSubmit}
+        >
+          {isLoading ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+          ) : (
+            <Search className="size-4" aria-hidden="true" />
+          )}
+          <span className="truncate">
+            {isLoading ? "ရှာနေသည်..." : "ဟင်းရှာမယ်"}
+          </span>
+        </Button>
 
         {error ? (
           <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm leading-6 text-red-800">
@@ -374,7 +455,13 @@ function IngredientPanel({
   );
 }
 
-function SelectedIngredients({ ingredients }: { ingredients: string[] }) {
+function SelectedIngredients({
+  ingredients,
+  onRemove,
+}: {
+  ingredients: string[];
+  onRemove: (ingredient: string) => void;
+}) {
   if (ingredients.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-[#b8ab89] bg-[#f8f0c4] p-3 text-sm leading-6 text-[#68624c]">
@@ -396,9 +483,29 @@ function SelectedIngredients({ ingredients }: { ingredients: string[] }) {
           <Badge
             key={ingredient}
             variant="secondary"
-            className="h-auto max-w-full whitespace-normal rounded-lg border border-[#5b6f2f]/20 bg-[#eef4dc] px-2.5 py-1 text-left font-bold leading-5 text-[#3f5720] hover:bg-[#eef4dc]"
+            className="group h-auto max-w-full whitespace-normal rounded-lg border border-[#5b6f2f]/20 bg-[#eef4dc] pl-2.5 pr-1.5 py-1 text-left font-bold leading-5 text-[#3f5720] hover:bg-[#eef4dc] flex items-center gap-1"
           >
-            {ingredient}
+            <span className="min-w-0 truncate">{ingredient}</span>
+            <button
+              type="button"
+              onClick={() => onRemove(ingredient)}
+              className="rounded-full p-0.5 text-[#5b6f2f]/60 hover:bg-[#5b6f2f]/10 hover:text-[#5b6f2f] focus:outline-none transition-colors"
+              aria-label={`Remove ${ingredient}`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="size-3"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
           </Badge>
         ))}
       </div>
@@ -408,10 +515,62 @@ function SelectedIngredients({ ingredients }: { ingredients: string[] }) {
 
 function ResultsSection({ result }: { result: RecipeResult | null }) {
   const recipes = result?.recipes ?? [];
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [activeScrollIndex, setActiveScrollIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    setActiveScrollIndex(0);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ left: 0 });
+    }
+  }, [result]);
+
+  useEffect(() => {
+    if (!result || !result.recipes || result.recipes.length <= 1 || isHovered) {
+      return;
+    }
+
+    const intervalId = setInterval(() => {
+      if (!scrollContainerRef.current) return;
+      const container = scrollContainerRef.current;
+      const recipesCount = result.recipes.length;
+      const nextIndex = (activeScrollIndex + 1) % recipesCount;
+
+      const cardElement = container.children[nextIndex] as HTMLElement;
+      if (cardElement) {
+        const cardLeftRelativeToContainer = cardElement.offsetLeft - container.offsetLeft;
+        const firstChild = container.children[0] as HTMLElement;
+        const containerPadding = firstChild ? (firstChild.offsetLeft - container.offsetLeft) : 0;
+
+        container.scrollTo({
+          left: cardLeftRelativeToContainer - containerPadding,
+          behavior: "smooth",
+        });
+        setActiveScrollIndex(nextIndex);
+      }
+    }, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [result, activeScrollIndex, isHovered]);
+
+  const handleScroll = () => {
+    if (!scrollContainerRef.current) return;
+    const container = scrollContainerRef.current;
+    const firstChild = container.children[0] as HTMLElement;
+    const cardWidth = firstChild?.getBoundingClientRect().width ?? 300;
+    if (cardWidth <= 0) return;
+    const gap = 16; // gap-4 is 16px
+    const index = Math.round(container.scrollLeft / (cardWidth + gap));
+
+    if (index >= 0 && index < recipes.length && index !== activeScrollIndex) {
+      setActiveScrollIndex(index);
+    }
+  };
 
   return (
-    <section className="min-w-0 space-y-3 sm:space-y-4">
-      <div className="flex flex-col items-start justify-between gap-3 rounded-lg border border-[#d9d0b8] bg-[#fffdf6] p-3 shadow-sm sm:flex-row sm:items-center sm:p-4">
+    <section className="min-w-0 space-y-4 sm:space-y-6">
+      <div className="flex flex-col items-start justify-between gap-4 rounded-lg border border-[#d9d0b8] bg-[#fffdf6] p-4 shadow-sm sm:flex-row sm:items-center sm:p-5 lg:p-6">
         <div className="min-w-0">
           <p className="text-sm font-black uppercase tracking-wide text-[#5b6f2f]">
             Recommended
@@ -437,10 +596,23 @@ function ResultsSection({ result }: { result: RecipeResult | null }) {
       ) : null}
 
       {recipes.length > 0 ? (
-        <div className="grid min-w-0 grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {recipes.map((recipe, index) => (
-            <RecipeCard key={recipe.id} recipe={recipe} index={index} />
-          ))}
+        <div className="min-w-0">
+          <div
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className="scrollbar-custom flex gap-4 overflow-x-auto py-1 snap-x snap-mandatory scroll-smooth"
+          >
+            {recipes.map((recipe, index) => (
+              <div
+                key={recipe.id}
+                className="w-full sm:w-[340px] md:w-[calc(50%-0.5rem)] lg:w-[calc((100%-2rem)/3)] shrink-0 snap-start"
+              >
+                <RecipeCard recipe={recipe} index={index} />
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         <EmptyResults />
@@ -451,7 +623,7 @@ function ResultsSection({ result }: { result: RecipeResult | null }) {
 
 function EmptyResults() {
   return (
-    <div className="grid min-h-64 place-items-center rounded-lg border border-dashed border-[#b8ab89] bg-[#fffdf6] p-4 text-center shadow-sm sm:min-h-72 sm:p-6">
+    <div className="grid min-h-64 place-items-center rounded-lg border border-dashed border-[#b8ab89] bg-[#fffdf6] p-4 text-center shadow-sm sm:min-h-72 sm:p-5 lg:p-6">
       <div className="max-w-sm space-y-3">
         <div className="mx-auto flex size-14 items-center justify-center rounded-lg bg-[#f1d36a] text-[#2f3b1f] ring-1 ring-[#2f3b1f]/15">
           <Utensils className="size-7" aria-hidden="true" />
@@ -484,25 +656,25 @@ function RecipeCard({
   return (
     <Card className="min-w-0 gap-0 rounded-lg border border-[#d9d0b8] bg-[#fffdf6] py-0 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
       <div
-        className={`flex h-24 items-center justify-between p-3 sm:p-4 ${tone}`}
+        className={`flex h-20 items-center justify-between p-4 sm:p-5 lg:p-6 ${tone}`}
       >
         <div className="min-w-0">
           <p className="text-xs font-black uppercase tracking-wide opacity-85">
-            Chef pick
+            Chef Choice
           </p>
-          <p className="mt-1 line-clamp-2 text-lg font-black leading-7 wrap-anywhere">
-            {recipe.burmeseTitle}
+          <p className="mt-0.5 text-base font-black leading-6 wrap-anywhere">
+            အကြံပြုဟင်းလျာ ( {index + 1} )
           </p>
         </div>
-        <div className="ml-3 flex size-12 shrink-0 items-center justify-center rounded-lg bg-[#fffdf6] text-[#5b6f2f] sm:size-14">
-          <Utensils className="size-7" aria-hidden="true" />
+        <div className="ml-3 flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#fffdf6]/20 backdrop-blur-sm text-current sm:size-11">
+          <Sparkles className="size-5 shrink-0" aria-hidden="true" />
         </div>
       </div>
 
-      <CardHeader className="min-w-0 gap-3 p-3 sm:p-4">
+      <CardHeader className="min-w-0 gap-3 p-4 sm:p-5 lg:p-6">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 space-y-1">
-            <CardTitle className="text-lg font-black leading-7 wrap-anywhere">
+            <CardTitle className="text-lg font-black leading-loose wrap-anywhere">
               {recipe.burmeseTitle}
             </CardTitle>
             <CardDescription className="leading-6 wrap-anywhere">
@@ -529,7 +701,7 @@ function RecipeCard({
           ))}
         </div>
       </CardHeader>
-      <CardContent className="flex min-w-0 flex-col gap-3 p-3 pt-0 sm:gap-4 sm:p-4 sm:pt-0">
+      <CardContent className="flex min-w-0 flex-col gap-4 p-4 pt-0 sm:gap-4 sm:p-5 sm:pt-0 lg:p-6 lg:pt-0">
         <p className="text-sm leading-7 text-[#4f4a36] wrap-anywhere">
           {recipe.summary}
         </p>
@@ -549,7 +721,7 @@ function RecipeCard({
             </li>
           ))}
         </ol>
-        <div className="flex items-start justify-between gap-3 rounded-lg border border-[#d9d0b8] bg-[#fbf8ee] p-3 text-sm leading-6 text-[#4f4a36]">
+        <div className="flex items-start justify-between gap-3 rounded-lg border border-[#d9d0b8] bg-[#fbf8ee] p-4 text-sm leading-6 text-[#4f4a36]">
           <span className="min-w-0 wrap-anywhere">
             {recipe.tips[0] ?? "စားခါနီး အရသာကို ပြန်ညှိပါ။"}
           </span>
@@ -570,7 +742,7 @@ function IngredientGroup({
   emptyText: string;
 }) {
   return (
-    <div className="min-w-0 space-y-2 rounded-lg border border-[#d9d0b8] bg-[#fbf8ee] p-3">
+    <div className="min-w-0 space-y-2 rounded-lg border border-[#d9d0b8] bg-[#fbf8ee] p-3 sm:p-4">
       <p className="text-sm font-black">{title}</p>
       <div className="flex flex-wrap gap-2">
         {items.length > 0 ? (

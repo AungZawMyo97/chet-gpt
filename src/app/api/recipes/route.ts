@@ -7,11 +7,12 @@ import {
 import { parseIngredients } from "@/features/recipes/domain/ingredient-parser";
 import type { RecipeRequest } from "@/features/recipes/domain/recipe";
 import { LocalRecipeGenerator } from "@/features/recipes/infrastructure/local-recipe-generator";
-import { OpenRouterRecipeGenerator } from "@/features/recipes/infrastructure/openrouter-recipe-generator";
+import { GoogleGeminiRecipeGenerator } from "@/features/recipes/infrastructure/google-gemini-recipe-generator";
 
 interface RecipeApiBody {
   ingredients?: string;
   style?: string;
+  model?: string;
 }
 
 const maxRequestBytes = 8_192;
@@ -29,9 +30,10 @@ export async function POST(request: Request) {
     const recipeRequest: RecipeRequest = {
       ingredients,
       style: normalizeStyle(body.style),
+      model: body.model,
     };
 
-    const useCase = new GenerateRecipesUseCase(createRecipeGenerator());
+    const useCase = new GenerateRecipesUseCase(createRecipeGenerator(body.model));
     const result = await useCase.execute(recipeRequest);
 
     return NextResponse.json(result);
@@ -48,7 +50,7 @@ export async function POST(request: Request) {
 
 async function readRecipeApiBody(
   request: Request,
-): Promise<Required<RecipeApiBody>> {
+): Promise<{ ingredients: string; style: string; model?: string }> {
   const contentLength = Number(request.headers.get("content-length") ?? 0);
 
   if (contentLength > maxRequestBytes) {
@@ -80,15 +82,16 @@ async function readRecipeApiBody(
   return {
     ingredients: body.ingredients,
     style: typeof body.style === "string" ? body.style : "any",
+    model: typeof body.model === "string" ? body.model : undefined,
   };
 }
 
-function createRecipeGenerator() {
+function createRecipeGenerator(model?: string) {
   const localGenerator = new LocalRecipeGenerator();
-  const openRouterApiKey = process.env.OPENROUTER_API_KEY;
+  const geminiApiKey = process.env.GEMINI_API_KEY;
 
-  if (openRouterApiKey) {
-    return new OpenRouterRecipeGenerator(openRouterApiKey, localGenerator);
+  if (geminiApiKey) {
+    return new GoogleGeminiRecipeGenerator(geminiApiKey, localGenerator, model);
   }
 
   return localGenerator;

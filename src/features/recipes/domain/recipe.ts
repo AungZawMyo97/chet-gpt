@@ -27,6 +27,7 @@ export interface RecipeSuggestion {
 export interface RecipeRequest {
   ingredients: string[];
   style: RecipeStyle;
+  model?: string;
 }
 
 export interface RecipeResult {

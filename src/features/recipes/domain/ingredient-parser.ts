@@ -1,4 +1,4 @@
-const separators = /[\n,;|]+/g;
+const separators = /[\n,;|၊။]+/g;
 
 export function parseIngredients(value: string): string[] {
   return value

@@ -10,4 +10,13 @@ describe("parseIngredients", () => {
       "shallot",
     ]);
   });
+
+  it("splits Burmese ingredients using Burmese separators U+104A and U+104B", () => {
+    expect(parseIngredients("ကြက်သား၊ ကြက်သွန်နီ။ ကြက်သွန်ဖြူ၊ ခရမ်းချဉ်သီး")).toEqual([
+      "ကြက်သား",
+      "ကြက်သွန်နီ",
+      "ကြက်သွန်ဖြူ",
+      "ခရမ်းချဉ်သီး",
+    ]);
+  });
 });
