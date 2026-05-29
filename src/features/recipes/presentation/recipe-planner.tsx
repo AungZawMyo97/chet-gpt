@@ -84,6 +84,7 @@ export function RecipePlanner() {
   const [isLoading, setIsLoading] = useState(false);
   const [models, setModels] = useState<AIModel[]>([]);
   const [selectedModel, setSelectedModel] = useState<string>("");
+  const [resultVersion, setResultVersion] = useState(0);
 
   useEffect(() => {
     async function loadModels() {
@@ -142,6 +143,7 @@ export function RecipePlanner() {
       }
 
       setResult(data as RecipeResult);
+      setResultVersion((currentVersion) => currentVersion + 1);
     } catch (requestError) {
       setError(
         requestError instanceof DOMException &&
@@ -201,7 +203,7 @@ export function RecipePlanner() {
             onModelChange={setSelectedModel}
           />
 
-          <ResultsSection result={result} />
+          <ResultsSection key={resultVersion} result={result} />
         </div>
       </div>
     </main>
@@ -518,13 +520,6 @@ function ResultsSection({ result }: { result: RecipeResult | null }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeScrollIndex, setActiveScrollIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-
-  useEffect(() => {
-    setActiveScrollIndex(0);
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({ left: 0 });
-    }
-  }, [result]);
 
   useEffect(() => {
     if (!result || !result.recipes || result.recipes.length <= 1 || isHovered) {
