@@ -70,7 +70,7 @@ Use `.env.local` for local secrets:
 
 ```bash
 GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.8-flash
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 

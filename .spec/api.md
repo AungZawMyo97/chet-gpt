@@ -43,7 +43,7 @@ The request body must be a JSON object containing the following keys:
 * **`style`** (Optional `string`):
   Desired cooking style. Must be one of the normalized styles: `"any"`, `"quick"`, `"family"`, `"spicy"`, `"healthy"`, `"budget"`. Defaults to `"any"` if omitted or invalid.
 * **`model`** (Optional `string`):
-  Requested AI model identifier (e.g. `"gemini-2.5-flash"`, `"gemini-2.5-pro"`). Forwarded to Google Gemini during recipe generation. If missing or offline, defaults to the pre-configured environment model.
+  Requested AI model identifier (e.g. `"gemini-3.8-flash"`, `"gemini-3.6-flash"`). Forwarded to Google Gemini during recipe generation. If missing or offline, defaults to the pre-configured environment model.
 
 ---
 

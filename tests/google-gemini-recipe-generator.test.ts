@@ -20,6 +20,7 @@ describe("GoogleGeminiRecipeGenerator", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.clearAllMocks();
+    vi.unstubAllEnvs();
   });
 
   it("returns local recipes without exposing provider failure details", async () => {
@@ -94,5 +95,45 @@ describe("GoogleGeminiRecipeGenerator", () => {
     expect(mockGenerateContent).toHaveBeenCalled();
     const callArgs = mockGenerateContent.mock.calls[0]?.[0];
     expect(callArgs?.model).toBe("request-level-model");
+  });
+
+  it("defaults to the gemini-3.8-flash model when no model is provided", async () => {
+    vi.stubEnv("GEMINI_MODEL", "");
+
+    const mockResponse = {
+      text: JSON.stringify({
+        recipes: [
+          {
+            id: "test-id",
+            title: "Test Recipe",
+            burmeseTitle: "စမ်းသပ်ဟင်း",
+            summary: "Test Summary",
+            cookTimeMinutes: 20,
+            difficulty: "Easy",
+            matchingIngredients: ["egg"],
+            missingIngredients: [],
+            steps: ["Step 1"],
+            tips: ["Tip 1"],
+          }
+        ]
+      })
+    };
+
+    mockGenerateContent.mockResolvedValue(mockResponse);
+
+    const generator = new GoogleGeminiRecipeGenerator(
+      "test-api-key",
+      new LocalRecipeGenerator(),
+    );
+
+    const result = await generator.generate({
+      ingredients: ["egg"],
+      style: "any",
+    });
+
+    expect(result.source).toBe("ai");
+
+    const callArgs = mockGenerateContent.mock.calls[0]?.[0];
+    expect(callArgs?.model).toBe("gemini-3.8-flash");
   });
 });

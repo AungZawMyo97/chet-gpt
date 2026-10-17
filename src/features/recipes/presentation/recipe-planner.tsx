@@ -98,10 +98,10 @@ export function RecipePlanner() {
         console.error("Failed to load models via Axios:", err);
         const defaultModels = [
           {
-            id: "gemini-2.5-flash",
-            name: "Gemini 2.5 Flash",
+            id: "gemini-3.8-flash",
+            name: "Gemini 3.8 Flash",
             provider: "Google AI",
-            description: "Fast and lightweight model, optimized for speed and efficiency."
+            description: "Fast and powerful model, optimized for speed and efficiency."
           }
         ];
         setModels(defaultModels);

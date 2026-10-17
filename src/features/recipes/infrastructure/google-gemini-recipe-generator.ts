@@ -21,7 +21,7 @@ export class GoogleGeminiRecipeGenerator implements RecipeGenerator {
     private readonly fallbackGenerator: RecipeGenerator,
     model?: string,
   ) {
-    this.model = model || process.env.GEMINI_MODEL || "gemini-2.5-flash";
+    this.model = model || process.env.GEMINI_MODEL || "gemini-3.8-flash";
   }
 
   async generate(request: RecipeRequest): Promise<RecipeResult> {
