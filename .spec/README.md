@@ -23,7 +23,7 @@ To explore the details of each system component, follow the links below:
 
 ### 4. [Testing Specifications](file:///c:/Users/Jerax/Desktop/my_portfolio_react/chet-gpt/.spec/testing.md)
 * Understand the **Vitest** configuration and test coverage targets.
-* Review details of test suites focusing on ingredient parsing, Gemini fallbacks, AI response filters, and route validators.
+* Review details of test suites focusing on ingredient parsing, retrieval, Gemini fallbacks, AI response filters, and route validators.
 * Learn patterns for mocking external network requests safely without real API keys.
 
 ---
@@ -33,4 +33,5 @@ To explore the details of each system component, follow the links below:
 * **Core Stack**: React 19 (Client components), Next.js 16 (App Router), TypeScript 5.
 * **Styling**: Tailwind CSS v4, Lucide React icons, and custom glassmorphic/flat-design accents.
 * **AI Provider**: Google Gen AI SDK (`@google/genai`) for Gemini 3.8 Flash / 3.6 Flash, utilizing native JSON schema constraints.
+* **Recipe Grounding (RAG)**: A curated Burmese recipe knowledge base retrieved with `gemini-embedding-2` embeddings (keyword fallback) and injected into Gemini prompts as reference recipes. Rebuild the index with `npm run build:index`.
 * **Fallback Strategy**: Local recipe fallback generators that operate when Google Gemini is offline or missing credentials, preserving immediate application usability.

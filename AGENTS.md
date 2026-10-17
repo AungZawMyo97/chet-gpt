@@ -31,7 +31,9 @@ Generate output in simple English and avoid complicated wording.
   - Google Gemini AI, AI JSON parsing, AI error fallback, and local recipe generation in `src/features/recipes/infrastructure/`.
 - Added direct Google Gemini AI recipe generation using `@google/genai` with strict responseSchema.
 - Added local recipe fallback when no API key exists or the AI request fails.
-- Added tests in `tests/` for ingredient parsing, local recipe generation, Gemini fallback behavior, AI output parsing, and route configuration.
+- Added retrieval-augmented generation (RAG): a local Burmese recipe knowledge base with `gemini-embedding-2` vector retrieval, keyword fallback, and reference recipes added to the Gemini prompt.
+- Added `npm run build:index` to rebuild the recipe embedding index.
+- Added tests in `tests/` for ingredient parsing, local recipe generation, Gemini fallback behavior, AI output parsing, retrieval, and route configuration.
 
 ## Project Structure & Module Organization
 
@@ -44,6 +46,7 @@ Keep the layout predictable and shallow:
 - `src/components/ui/` for shadcn/ui style components.
 - `src/features/recipes/` for the recipe feature.
 - `src/lib/` for shared helpers.
+- `scripts/` for maintenance scripts, such as the recipe embedding index builder.
 - `public/` for files served directly without bundling.
 - `tests/` or colocated `*.test.*` files for automated tests.
 - `docs/` for design notes, setup details, and architecture decisions.
@@ -61,6 +64,7 @@ Use these verified local commands:
 - `npm run lint` checks formatting and code quality.
 - `npm run typecheck` checks TypeScript types.
 - `npm test` runs the automated test suite.
+- `npm run build:index` rebuilds the recipe embedding index (needs `GEMINI_API_KEY` in `.env.local`).
 
 Keep this section synchronized with `package.json` so contributors can rely on it.
 

@@ -1,0 +1,364 @@
+[
+  {
+    "id": "burmese-egg-fried-rice",
+    "title": "Burmese Egg Fried Rice",
+    "burmeseTitle": "ထမင်းကြော်",
+    "summary": "Simple fried rice with egg, shallots and a touch of turmeric.",
+    "timeMinutes": 15,
+    "difficulty": "Easy",
+    "servings": 2,
+    "ingredients": ["cooked rice", "eggs", "shallots", "garlic", "turmeric", "fish sauce", "spring onion", "oil"],
+    "steps": [
+      "Heat oil in a pan and fry sliced shallots and garlic until light golden.",
+      "Add turmeric, then crack in the eggs and scramble them quickly.",
+      "Add the cooked rice and mix well, breaking up any lumps.",
+      "Season with fish sauce, then fold in chopped spring onion.",
+      "Serve hot with cucumber slices or a squeeze of lime if you have them."
+    ],
+    "tags": ["quick", "budget"]
+  },
+  {
+    "id": "tomato-egg-stir-fry",
+    "title": "Tomato and Egg Stir-fry",
+    "burmeseTitle": "ခရမ်းချဉ်သီးကြက်ဥကြော်",
+    "summary": "Soft tomatoes and scrambled egg cooked together in one pan.",
+    "timeMinutes": 15,
+    "difficulty": "Easy",
+    "servings": 2,
+    "ingredients": ["tomatoes", "eggs", "shallots", "garlic", "spring onion", "fish sauce", "oil"],
+    "steps": [
+      "Cut the tomatoes into thin wedges and slice the shallots and garlic.",
+      "Fry shallots and garlic in oil until soft.",
+      "Add tomatoes and cook until they release their juice.",
+      "Push the tomatoes to one side, pour in the beaten eggs and scramble.",
+      "Mix everything together, season with fish sauce and top with spring onion."
+    ],
+    "tags": ["quick", "healthy"]
+  },
+  {
+    "id": "burmese-chicken-curry",
+    "title": "Burmese Chicken Curry",
+    "burmeseTitle": "ကြက်သားဟင်း",
+    "summary": "A home-style oil-returns curry with onion, ginger and turmeric.",
+    "timeMinutes": 45,
+    "difficulty": "Medium",
+    "servings": 4,
+    "ingredients": ["chicken", "onion", "garlic", "ginger", "turmeric", "chili powder", "fish sauce", "oil"],
+    "steps": [
+      "Pound or blend onion, garlic and ginger with a little water into a paste.",
+      "Heat oil and fry the paste with turmeric until the raw smell is gone.",
+      "Add the chicken and fry until it turns opaque.",
+      "Add fish sauce and chili powder, then a cup of water.",
+      "Cover and simmer until the chicken is tender and the oil rises.",
+      "Taste, adjust the salt, and rest for a few minutes before serving."
+    ],
+    "tags": ["family"]
+  },
+  {
+    "id": "ginger-pork-curry",
+    "title": "Ginger Pork Curry",
+    "burmeseTitle": "ဝက်သားဂျင်းဟင်း",
+    "summary": "Slow-cooked pork with young ginger and dark soy sauce.",
+    "timeMinutes": 60,
+    "difficulty": "Medium",
+    "servings": 4,
+    "ingredients": ["pork belly", "ginger", "onion", "garlic", "dark soy sauce", "fish sauce", "oil"],
+    "steps": [
+      "Slice the pork belly and young ginger into thin pieces.",
+      "Fry onion and garlic in oil until fragrant.",
+      "Add the pork and cook until lightly browned.",
+      "Add ginger, dark soy sauce and fish sauce.",
+      "Add water, cover, and simmer until the pork is soft.",
+      "Reduce the sauce until it coats the meat."
+    ],
+    "tags": ["family"]
+  },
+  {
+    "id": "burmese-egg-curry",
+    "title": "Burmese Egg Curry",
+    "burmeseTitle": "ကြက်ဥဟင်း",
+    "summary": "Boiled eggs simmered in a light tomato and onion sauce.",
+    "timeMinutes": 25,
+    "difficulty": "Easy",
+    "servings": 3,
+    "ingredients": ["eggs", "onion", "tomato", "garlic", "turmeric", "chili powder", "fish sauce", "oil"],
+    "steps": [
+      "Boil the eggs, cool them in water, then peel and set aside.",
+      "Fry onion, garlic and turmeric in oil until soft.",
+      "Add tomatoes and cook until they break down.",
+      "Add chili powder, fish sauce and a little water to make a sauce.",
+      "Add the boiled eggs, spoon the sauce over them, and simmer for 5 minutes."
+    ],
+    "tags": ["budget", "family"]
+  },
+  {
+    "id": "tomato-fish-curry",
+    "title": "Tomato Fish Curry",
+    "burmeseTitle": "ငါးခရမ်းချဉ်သီးဟင်း",
+    "summary": "Fish pieces cooked gently in a tomato sauce with green chili.",
+    "timeMinutes": 30,
+    "difficulty": "Medium",
+    "servings": 3,
+    "ingredients": ["fish", "tomatoes", "onion", "garlic", "ginger", "green chili", "turmeric", "fish sauce", "oil"],
+    "steps": [
+      "Clean the fish and cut it into large pieces.",
+      "Fry onion, garlic, ginger and turmeric in oil until fragrant.",
+      "Add chopped tomatoes and cook into a soft sauce.",
+      "Add fish sauce, green chili and a little water, then bring to a simmer.",
+      "Slide in the fish pieces, cover, and cook gently for 10 minutes."
+    ],
+    "tags": ["spicy", "family"]
+  },
+  {
+    "id": "burmese-prawn-curry",
+    "title": "Burmese Prawn Curry",
+    "burmeseTitle": "ပုဇွန်ဟင်း",
+    "summary": "Quick prawn curry with tomato and garlic.",
+    "timeMinutes": 25,
+    "difficulty": "Easy",
+    "servings": 3,
+    "ingredients": ["prawns", "onion", "tomato", "garlic", "turmeric", "fish sauce", "oil"],
+    "steps": [
+      "Peel and clean the prawns if needed.",
+      "Fry onion, garlic and turmeric in oil until soft.",
+      "Add tomatoes and cook until juicy.",
+      "Add the prawns and fish sauce, then stir until the prawns turn pink.",
+      "Simmer for a few minutes so the sauce clings to the prawns."
+    ],
+    "tags": ["family"]
+  },
+  {
+    "id": "burmese-split-pea-dhal",
+    "title": "Burmese Split Pea Dhal",
+    "burmeseTitle": "ပဲဟင်း",
+    "summary": "Creamy split peas topped with golden fried onion and garlic.",
+    "timeMinutes": 40,
+    "difficulty": "Easy",
+    "servings": 4,
+    "ingredients": ["split peas", "onion", "garlic", "ginger", "turmeric", "fish sauce", "oil"],
+    "steps": [
+      "Rinse the split peas and boil them with turmeric until soft.",
+      "Mash some of the peas to make the dhal creamy.",
+      "Fry sliced onion, garlic and ginger in oil until golden.",
+      "Pour the fried mix into the dhal and stir well.",
+      "Season with fish sauce and simmer for 5 more minutes."
+    ],
+    "tags": ["budget", "healthy"]
+  },
+  {
+    "id": "potato-chicken-curry",
+    "title": "Potato and Chicken Curry",
+    "burmeseTitle": "အာလူးကြက်သားဟင်း",
+    "summary": "Family curry with soft potatoes in a light tomato gravy.",
+    "timeMinutes": 45,
+    "difficulty": "Easy",
+    "servings": 4,
+    "ingredients": ["chicken", "potatoes", "onion", "tomato", "turmeric", "chili powder", "fish sauce", "oil"],
+    "steps": [
+      "Cut the chicken and potatoes into even chunks.",
+      "Fry onion and turmeric in oil until soft.",
+      "Add the chicken and cook until it changes colour.",
+      "Add tomatoes, chili powder and fish sauce, then stir well.",
+      "Add the potatoes and water, cover, and simmer until both are tender."
+    ],
+    "tags": ["family"]
+  },
+  {
+    "id": "fish-sour-soup",
+    "title": "Burmese Fish Sour Soup",
+    "burmeseTitle": "ငါးချဉ်ရည်ဟင်း",
+    "summary": "Light tamarind broth with fish, tomato and green chili.",
+    "timeMinutes": 30,
+    "difficulty": "Easy",
+    "servings": 3,
+    "ingredients": ["fish", "tomatoes", "tamarind paste", "onion", "garlic", "green chili", "coriander", "fish sauce"],
+    "steps": [
+      "Simmer tomatoes, onion and garlic in water until soft.",
+      "Add tamarind paste and fish sauce to make a light sour broth.",
+      "Add green chili and let the soup bubble gently.",
+      "Slide in the fish pieces and poach them until just cooked.",
+      "Taste the broth, adjust the sourness, and finish with coriander."
+    ],
+    "tags": ["healthy", "spicy"]
+  },
+  {
+    "id": "gourd-prawn-soup",
+    "title": "Gourd and Prawn Soup",
+    "burmeseTitle": "ဘူးသီးပုဇွန်ဟင်းရည်",
+    "summary": "Soft bottle gourd in a light prawn broth.",
+    "timeMinutes": 25,
+    "difficulty": "Easy",
+    "servings": 3,
+    "ingredients": ["bottle gourd", "dried prawns", "garlic", "fish sauce", "black pepper", "oil"],
+    "steps": [
+      "Peel the gourd and cut it into small pieces.",
+      "Fry garlic and dried prawns in a little oil until fragrant.",
+      "Add water and bring to a boil.",
+      "Add the gourd and simmer until soft.",
+      "Season with fish sauce and black pepper before serving."
+    ],
+    "tags": ["healthy", "budget"]
+  },
+  {
+    "id": "coconut-chicken-noodles",
+    "title": "Coconut Chicken Noodles (Ohn No Khao Swe)",
+    "burmeseTitle": "အုန်းနို့ခေါက်ဆွဲ",
+    "summary": "Creamy coconut noodle soup topped with boiled egg.",
+    "timeMinutes": 45,
+    "difficulty": "Medium",
+    "servings": 4,
+    "ingredients": ["chicken", "coconut milk", "egg noodles", "onion", "garlic", "ginger", "turmeric", "chickpea flour", "fish sauce", "boiled eggs"],
+    "steps": [
+      "Fry onion, garlic, ginger and turmeric in oil until soft.",
+      "Add the chicken and cook until it changes colour.",
+      "Add coconut milk and simmer until the chicken is tender.",
+      "Mix chickpea flour with water and stir it in to thicken the sauce.",
+      "Season with fish sauce and serve over noodles with boiled egg slices."
+    ],
+    "tags": ["family"]
+  },
+  {
+    "id": "shan-style-noodles",
+    "title": "Shan Style Noodles",
+    "burmeseTitle": "ရှမ်းခေါက်ဆွဲ",
+    "summary": "Rice noodles with a savoury chicken and tomato topping.",
+    "timeMinutes": 35,
+    "difficulty": "Medium",
+    "servings": 3,
+    "ingredients": ["rice noodles", "chicken", "tomato", "garlic", "soy sauce", "chili oil", "pickled mustard greens", "peanuts"],
+    "steps": [
+      "Marinate the chicken with soy sauce and a little garlic.",
+      "Cook the chicken in a hot pan until browned and cooked through.",
+      "Add tomatoes and cook until they soften into a rough sauce.",
+      "Cook the rice noodles and place them in bowls.",
+      "Top with the chicken mix, pickled greens, chili oil and crushed peanuts."
+    ],
+    "tags": ["family"]
+  },
+  {
+    "id": "mohinga",
+    "title": "Mohinga (Fish Noodle Soup)",
+    "burmeseTitle": "မုန့်ဟင်းခါး",
+    "summary": "The classic breakfast noodle soup with catfish and banana stem.",
+    "timeMinutes": 60,
+    "difficulty": "Hard",
+    "servings": 4,
+    "ingredients": ["catfish", "rice noodles", "banana stem", "onion", "garlic", "ginger", "lemongrass", "chickpea flour", "turmeric", "fish sauce"],
+    "steps": [
+      "Simmer the fish with lemongrass until cooked, then remove the bones and flake it.",
+      "Fry onion, garlic, ginger and turmeric until fragrant.",
+      "Add the fish, fish sauce and the cooking broth.",
+      "Mix chickpea flour with water and stir it in to thicken the soup.",
+      "Add sliced banana stem and simmer until tender.",
+      "Serve the broth over rice noodles with coriander and lime."
+    ],
+    "tags": ["family"]
+  },
+  {
+    "id": "tea-leaf-salad",
+    "title": "Burmese Tea Leaf Salad",
+    "burmeseTitle": "လက်ဖက်သုပ်",
+    "summary": "Tangy fermented tea leaves tossed with crunchy toppings.",
+    "timeMinutes": 20,
+    "difficulty": "Easy",
+    "servings": 3,
+    "ingredients": ["fermented tea leaves", "cabbage", "tomato", "roasted peanuts", "sesame seeds", "dried shrimp", "fried garlic", "lime", "fish sauce", "green chili"],
+    "steps": [
+      "Shred the cabbage and slice the tomato into thin wedges.",
+      "Mix fermented tea leaves with lime juice and a little fish sauce.",
+      "Combine the cabbage, tomato, peanuts, sesame and dried shrimp in a bowl.",
+      "Add the tea leaf mix and toss everything together.",
+      "Top with fried garlic and sliced green chili."
+    ],
+    "tags": ["spicy", "healthy"]
+  },
+  {
+    "id": "ginger-salad",
+    "title": "Burmese Ginger Salad",
+    "burmeseTitle": "ဂျင်းသုပ်",
+    "summary": "Thin young ginger strips with nuts, lime and a gentle heat.",
+    "timeMinutes": 20,
+    "difficulty": "Easy",
+    "servings": 3,
+    "ingredients": ["young ginger", "tomato", "roasted peanuts", "sesame seeds", "dried shrimp", "fried garlic", "lime", "fish sauce", "green chili"],
+    "steps": [
+      "Slice the young ginger into very thin strips.",
+      "Soak the ginger in lime juice for a few minutes to soften the heat.",
+      "Slice the tomato and mix it with the ginger.",
+      "Add peanuts, sesame, dried shrimp and fish sauce, then toss.",
+      "Finish with fried garlic and sliced green chili."
+    ],
+    "tags": ["spicy", "healthy"]
+  },
+  {
+    "id": "tomato-salad",
+    "title": "Burmese Tomato Salad",
+    "burmeseTitle": "ခရမ်းချဉ်သီးသုပ်",
+    "summary": "A ten-minute salad that goes with any curry.",
+    "timeMinutes": 10,
+    "difficulty": "Easy",
+    "servings": 2,
+    "ingredients": ["tomatoes", "shallots", "coriander", "roasted peanuts", "lime", "fish sauce", "green chili"],
+    "steps": [
+      "Slice the tomatoes and shallots thinly.",
+      "Mix lime juice with fish sauce for the dressing.",
+      "Toss the tomatoes and shallots with the dressing.",
+      "Top with peanuts, coriander and sliced green chili."
+    ],
+    "tags": ["quick", "healthy"]
+  },
+  {
+    "id": "burmese-noodle-salad",
+    "title": "Burmese Noodle Salad",
+    "burmeseTitle": "ခေါက်ဆွဲသုပ်",
+    "summary": "Cold noodles tossed with crunchy vegetables and lime dressing.",
+    "timeMinutes": 20,
+    "difficulty": "Easy",
+    "servings": 2,
+    "ingredients": ["wheat noodles", "cabbage", "carrot", "onion", "roasted peanuts", "lime", "fish sauce", "chili oil"],
+    "steps": [
+      "Boil the noodles until just soft, then rinse in cold water.",
+      "Shred the cabbage and carrot into thin strips.",
+      "Mix lime juice, fish sauce and chili oil into a dressing.",
+      "Toss the noodles with the vegetables and dressing.",
+      "Top with sliced onion and crushed peanuts."
+    ],
+    "tags": ["quick"]
+  },
+  {
+    "id": "morning-glory-stir-fry",
+    "title": "Stir-fried Morning Glory",
+    "burmeseTitle": "ကန်စွန်းရွက်ကြော်",
+    "summary": "A ten-minute greens dish with garlic and fish sauce.",
+    "timeMinutes": 10,
+    "difficulty": "Easy",
+    "servings": 2,
+    "ingredients": ["morning glory", "garlic", "fish sauce", "oil", "green chili"],
+    "steps": [
+      "Wash the morning glory and cut it into short lengths.",
+      "Heat a little oil in a wok until very hot.",
+      "Fry the garlic for a few seconds until fragrant.",
+      "Add the morning glory and toss quickly over high heat.",
+      "Season with fish sauce and green chili, then serve at once."
+    ],
+    "tags": ["quick", "healthy"]
+  },
+  {
+    "id": "shan-tofu-salad",
+    "title": "Shan Tofu Salad",
+    "burmeseTitle": "ရှမ်းတို့ဟူးသုပ်",
+    "summary": "Chickpea tofu cubes tossed with tomato, lime and chili oil.",
+    "timeMinutes": 25,
+    "difficulty": "Easy",
+    "servings": 3,
+    "ingredients": ["chickpea tofu", "tomato", "cabbage", "roasted peanuts", "coriander", "lime", "fish sauce", "chili oil"],
+    "steps": [
+      "Cut the chickpea tofu into small cubes.",
+      "Slice the tomato and shred the cabbage.",
+      "Mix lime juice, fish sauce and chili oil into a dressing.",
+      "Toss the tofu, tomato and cabbage with the dressing.",
+      "Top with peanuts and coriander before serving."
+    ],
+    "tags": ["healthy", "spicy"]
+  }
+]

@@ -9,7 +9,7 @@ The code resides inside `src/features/recipes/` and is divided into four distinc
 ```mermaid
 graph TD
     Presentation[Presentation Layer<br>React Components & Client State] --> Application[Application Layer<br>Use Cases & Interfaces]
-    Infrastructure[Infrastructure Layer<br>Google Gemini AI & Fallback Generators] --> Application
+    Infrastructure[Infrastructure Layer<br>Google Gemini AI, Knowledge Retrieval & Fallback Generators] --> Application
     Application --> Domain[Domain Layer<br>Core Types & Ingredient Parsers]
     Presentation -.-> API[Next.js API Handler<br>POST /api/recipes]
     API --> Application
@@ -29,14 +29,18 @@ The Domain layer is the most stable and inner layer. It defines our core busines
   * Contains the helper `parseIngredients(value: string): string[]`.
   * Splits user-provided ingredients using a regular expression separator (`/[\n,;|]+/g`).
   * Normalizes elements to lowercase, trims whitespace, removes empty entries, and filters out duplicates.
+* **[recipe-knowledge.ts](file:///c:/Users/Jerax/Desktop/my_portfolio_react/chet-gpt/src/features/recipes/domain/recipe-knowledge.ts)**:
+  * Defines the knowledge base entities: `RecipeDocument` (a curated recipe entry), `RecipeQuery` (ingredients, style, and result limit), and the embedding `RecipeIndex` with its vector entries.
 
 ### 2. Application Layer (`src/features/recipes/application/`)
 
 The Application layer contains use cases that orchestrate the flow of data to and from the domain entities.
 
 * **[generate-recipes-use-case.ts](file:///c:/Users/Jerax/Desktop/my_portfolio_react/chet-gpt/src/features/recipes/application/generate-recipes-use-case.ts)**:
-  * Exposes the `RecipeGenerator` interface containing the async `generate(request: RecipeRequest): Promise<RecipeResult>` command.
-  * Declares `GenerateRecipesUseCase`, which handles execution validation (raising an error if no ingredients exist) and normalizes recipe style flags before delegating generation to the concrete adapter.
+  * Exposes the `RecipeGenerator` interface containing the async `generate(request: RecipeRequest, sourceRecipes?: RecipeDocument[]): Promise<RecipeResult>` command.
+  * Declares `GenerateRecipesUseCase`, which handles execution validation (raising an error if no ingredients exist), normalizes recipe style flags, retrieves up to three reference recipes through the `RecipeRetriever` port, and delegates generation to the concrete adapter.
+* **[retrieve-recipes.ts](file:///c:/Users/Jerax/Desktop/my_portfolio_react/chet-gpt/src/features/recipes/application/retrieve-recipes.ts)**:
+  * Declares the `RecipeRetriever` port with the async `retrieve(query: RecipeQuery): Promise<RecipeDocument[]>` command.
 
 ### 3. Infrastructure Layer (`src/features/recipes/infrastructure/`)
 
@@ -49,7 +53,18 @@ The Infrastructure layer implements the abstract interfaces defined in the Appli
   * Integrates a strict 25-second timeout via `Promise.race` to prevent hanging network calls.
 * **[recipe-ai-output.ts](file:///c:/Users/Jerax/Desktop/my_portfolio_react/chet-gpt/src/features/recipes/infrastructure/recipe-ai-output.ts)**:
   * Assembles system/user prompts instructing Gemini to respond strictly in a valid JSON schema with all user-facing strings translated to Burmese.
+  * Injects retrieved knowledge base recipes into the prompt as reference recipes when they are available.
   * Sanitizes, parses, and formats outputs (capping text lengths, clipping lists, bounding cook times between 5 and 240 minutes, and fallback-mapping difficulty attributes).
+* **[keyword-recipe-retriever.ts](file:///c:/Users/Jerax/Desktop/my_portfolio_react/chet-gpt/src/features/recipes/infrastructure/keyword-recipe-retriever.ts)**:
+  * Offline `RecipeRetriever` implementation. Ranks knowledge base recipes by ingredient coverage and adds a small bonus for matching cooking style tags.
+* **[embedding-recipe-retriever.ts](file:///c:/Users/Jerax/Desktop/my_portfolio_react/chet-gpt/src/features/recipes/infrastructure/embedding-recipe-retriever.ts)**:
+  * Embeds the user query with `gemini-embedding-2` and ranks recipes by cosine similarity against the built index.
+  * Falls back to keyword retrieval when there is no API key, no built index, or the embedding call fails.
+* **[vector-similarity.ts](file:///c:/Users/Jerax/Desktop/my_portfolio_react/chet-gpt/src/features/recipes/infrastructure/vector-similarity.ts)**:
+  * Pure `cosineSimilarity(left, right)` helper used for embedding ranking. All math, no dependencies.
+* **[recipe-knowledge-base.ts](file:///c:/Users/Jerax/Desktop/my_portfolio_react/chet-gpt/src/features/recipes/infrastructure/recipe-knowledge-base.ts)**:
+  * Loads and validates the curated recipe documents (`knowledge/recipes.json`) and the embedding index (`knowledge/recipe-index.json`).
+  * The recipes were drafted with AI help and need human review; the index is rebuilt with `npm run build:index` (see `scripts/build-recipe-index.mjs`).
 * **[local-recipe-generator.ts](file:///c:/Users/Jerax/Desktop/my_portfolio_react/chet-gpt/src/features/recipes/infrastructure/local-recipe-generator.ts)**:
   * Implements an offline `RecipeGenerator` fallback.
   * Reads the primary ingredient, aggregates secondary items, and uses pre-configured Burmese recipes ("ဆီပြန်ဟင်း", "ထမင်းကြော်", "ဟင်းချို") with dynamic ingredient adjustments to return reliable suggestions.

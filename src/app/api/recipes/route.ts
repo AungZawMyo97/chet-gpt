@@ -4,10 +4,17 @@ import {
   GenerateRecipesUseCase,
   normalizeStyle,
 } from "@/features/recipes/application/generate-recipes-use-case";
+import type { RecipeRetriever } from "@/features/recipes/application/retrieve-recipes";
 import { parseIngredients } from "@/features/recipes/domain/ingredient-parser";
 import type { RecipeRequest } from "@/features/recipes/domain/recipe";
+import { EmbeddingRecipeRetriever } from "@/features/recipes/infrastructure/embedding-recipe-retriever";
+import { KeywordRecipeRetriever } from "@/features/recipes/infrastructure/keyword-recipe-retriever";
 import { LocalRecipeGenerator } from "@/features/recipes/infrastructure/local-recipe-generator";
 import { GoogleGeminiRecipeGenerator } from "@/features/recipes/infrastructure/google-gemini-recipe-generator";
+import {
+  loadRecipeDocuments,
+  loadRecipeIndex,
+} from "@/features/recipes/infrastructure/recipe-knowledge-base";
 
 interface RecipeApiBody {
   ingredients?: string;
@@ -33,7 +40,10 @@ export async function POST(request: Request) {
       model: body.model,
     };
 
-    const useCase = new GenerateRecipesUseCase(createRecipeGenerator(body.model));
+    const useCase = new GenerateRecipesUseCase(
+      createRecipeGenerator(body.model),
+      createRecipeRetriever(),
+    );
     const result = await useCase.execute(recipeRequest);
 
     return NextResponse.json(result);
@@ -95,6 +105,24 @@ function createRecipeGenerator(model?: string) {
   }
 
   return localGenerator;
+}
+
+function createRecipeRetriever(): RecipeRetriever {
+  const documents = loadRecipeDocuments();
+  const keywordRetriever = new KeywordRecipeRetriever(documents);
+  const geminiApiKey = process.env.GEMINI_API_KEY;
+  const index = loadRecipeIndex();
+
+  if (!geminiApiKey || !index || index.entries.length === 0) {
+    return keywordRetriever;
+  }
+
+  return new EmbeddingRecipeRetriever(
+    geminiApiKey,
+    documents,
+    index,
+    keywordRetriever,
+  );
 }
 
 class RecipeApiError extends Error {

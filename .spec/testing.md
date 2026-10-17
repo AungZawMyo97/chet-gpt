@@ -14,15 +14,20 @@ Chet-GPT uses **Vitest** for unit testing. The test suite verifies domain rules,
 
 ## 2. Coverage Areas & Test Suites
 
-The application includes five main test suites, matching core modules:
+The application includes ten main test suites, matching core modules:
 
 ```text
 tests/
-├── ingredient-parser.test.ts         [Domain Layer]
-├── local-recipe-generator.test.ts    [Infrastructure Layer]
-├── recipe-ai-output.test.ts          [Infrastructure Layer]
+├── ingredient-parser.test.ts              [Domain Layer]
+├── generate-recipes-use-case.test.ts      [Application Layer]
+├── local-recipe-generator.test.ts         [Infrastructure Layer]
+├── recipe-ai-output.test.ts               [Infrastructure Layer]
 ├── google-gemini-recipe-generator.test.ts [Infrastructure Layer]
-└── recipe-route-config.test.ts       [API Route Layer]
+├── keyword-recipe-retriever.test.ts       [Infrastructure Layer]
+├── embedding-recipe-retriever.test.ts     [Infrastructure Layer]
+├── vector-similarity.test.ts              [Infrastructure Layer]
+├── recipe-knowledge-base.test.ts          [Infrastructure Layer]
+└── recipe-route-config.test.ts            [API Route Layer]
 ```
 
 ### A. Ingredient Parser (`tests/ingredient-parser.test.ts`)
@@ -45,6 +50,7 @@ tests/
 * **Target**: `buildRecipePrompt()` and `parseRecipeOutput()` utilities.
 * **Test cases**:
   * Verifies prompt constraints (e.g., injection defenses, Burmese translation instructions, and JSON shape specifications).
+  * Verifies that retrieved reference recipes appear in the prompt only when provided.
   * Verifies that malformed, incomplete, or over-nested JSON output from Google Gemini is parsed safely.
   * Verifies length-limit trimming (e.g., summaries capped at 280 characters, steps capped at 360 characters, list elements capped at 6 items).
   * Verifies cook time boundaries (clamping durations to a minimum of 5 minutes and a maximum of 240 minutes).
@@ -67,6 +73,38 @@ tests/
   * Validates ingredients constraints, asserting that missing ingredients or excessively long text inputs are rejected with a `400 Bad Request`.
   * Verifies dynamic model selection: asserts that passing custom model IDs inside the request payload propagates the model parameter cleanly to outbound Google Gemini APIs.
   * Verifies output payloads, checking that success responses match the `RecipeResult` format with a `200 OK` status.
+  * Verifies that knowledge base reference recipes are added to the Gemini prompt.
+
+### F. Retrieval & Use Case (`tests/generate-recipes-use-case.test.ts`)
+* **Target**: `GenerateRecipesUseCase` class in the Application layer.
+* **Test cases**:
+  * Asserts that retrieved knowledge base recipes are passed to the generator.
+  * Asserts that execution continues without source recipes when retrieval fails.
+  * Asserts the use case works without a retriever configured.
+  * Asserts empty ingredient requests are still rejected.
+
+### G. Keyword Retriever (`tests/keyword-recipe-retriever.test.ts`)
+* **Target**: `KeywordRecipeRetriever` class.
+* **Test cases**:
+  * Ranks recipes by ingredient coverage and matches partial names in both directions.
+  * Boosts recipes that match the cooking style tag.
+  * Ignores casing and whitespace, respects the limit, and returns nothing when nothing matches.
+
+### H. Embedding Retriever (`tests/embedding-recipe-retriever.test.ts`)
+* **Target**: `EmbeddingRecipeRetriever` class.
+* **Test cases**:
+  * Ranks recipes by cosine similarity using a mocked `@google/genai` embedding response.
+  * Falls back to keyword retrieval when the embedding call fails, the key is missing, the index is empty, or the embedding size does not match the index.
+
+### I. Vector Math (`tests/vector-similarity.test.ts`)
+* **Target**: `cosineSimilarity()` helper.
+* **Test cases**: identical, perpendicular, opposite, unnormalized, mismatched-length, and zero-magnitude vectors.
+
+### J. Knowledge Base Files (`tests/recipe-knowledge-base.test.ts`)
+* **Target**: `loadRecipeDocuments()` and `loadRecipeIndex()`.
+* **Test cases**:
+  * Asserts the curated recipe file loads with unique ids and complete fields.
+  * Asserts the built embedding index only references known recipe ids with vectors matching the stored dimensions.
 
 ---
 

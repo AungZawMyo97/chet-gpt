@@ -29,8 +29,8 @@ The app can use AI through direct integration with Google Gemini. If no API key 
 1. The user enters ingredients in the recipe planner.
 2. The frontend sends the ingredients and selected style to `POST /api/recipes`.
 3. The API validates the request and parses the ingredient text.
-4. The use case calls a recipe generator.
-5. If `GEMINI_API_KEY` is set, the app asks Google Gemini for recipe JSON.
+4. The app retrieves the closest recipes from the local Burmese recipe knowledge base.
+5. If `GEMINI_API_KEY` is set, the app sends the ingredients plus the retrieved reference recipes to Google Gemini for grounded recipe JSON.
 6. If the AI call fails or no API key is set, the app returns local Burmese recipe suggestions.
 
 ## Setup
@@ -65,6 +65,22 @@ Open:
 http://localhost:3000
 ```
 
+## Recipe Knowledge Base (RAG)
+
+The app keeps a small Burmese recipe collection in `src/features/recipes/infrastructure/knowledge/recipes.json`. Before asking Gemini, it retrieves the closest matches and sends them as reference recipes, so suggestions stay close to real home cooking.
+
+- With `GEMINI_API_KEY` set, retrieval uses `gemini-embedding-2` vectors and cosine similarity.
+- Without a key or without a built index, it falls back to keyword matching.
+- The recipes were drafted with AI help. A human should review them so the knowledge base stays authentic.
+
+Rebuild the embedding index after changing the recipes:
+
+```bash
+npm run build:index
+```
+
+The command loads `GEMINI_API_KEY` from `.env.local` with Node's `--env-file` flag. The key is never printed or saved into the index.
+
 ## Commands
 
 ```bash
@@ -74,6 +90,7 @@ npm run start
 npm run lint
 npm run typecheck
 npm test
+npm run build:index
 ```
 
 ## Project Structure
@@ -81,11 +98,12 @@ npm test
 - `src/app/` contains Next.js routes, layout, and API endpoints.
 - `src/app/api/recipes/route.ts` handles recipe generation requests.
 - `src/components/ui/` contains reusable UI components.
-- `src/features/recipes/domain/` contains recipe types and ingredient parsing.
-- `src/features/recipes/application/` contains the recipe generation use case and interface.
-- `src/features/recipes/infrastructure/` contains Google Gemini AI integration, AI output parsing, error fallback, and local recipe generators.
+- `src/features/recipes/domain/` contains recipe types, knowledge base types, and ingredient parsing.
+- `src/features/recipes/application/` contains the recipe generation use case, retriever interface, and generator interface.
+- `src/features/recipes/infrastructure/` contains Google Gemini AI integration, recipe retrieval (embeddings and keyword), the recipe knowledge base, AI output parsing, error fallback, and local recipe generators.
 - `src/features/recipes/presentation/` contains the recipe planner UI.
 - `src/lib/` contains shared helpers.
+- `scripts/` contains maintenance scripts such as the recipe embedding index builder.
 - `tests/` contains Vitest tests for recipe logic and API configuration.
 
 ## Current Features
@@ -96,6 +114,7 @@ npm test
 - Burmese recipe cards.
 - Cook time, difficulty, matching ingredients, missing ingredients, steps, and tips.
 - Google Gemini AI recipe generation.
+- Retrieval-augmented suggestions grounded in a local Burmese recipe knowledge base.
 - Local fallback recipes when AI is unavailable.
 - Request size, content type, JSON, and ingredient validation in the API.
-- Unit tests for parsing, local generation, AI output cleanup, Gemini behavior, and route config.
+- Unit tests for parsing, local generation, retrieval, AI output cleanup, Gemini behavior, and route config.

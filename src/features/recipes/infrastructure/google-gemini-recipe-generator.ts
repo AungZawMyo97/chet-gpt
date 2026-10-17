@@ -5,6 +5,7 @@ import type {
   RecipeRequest,
   RecipeResult,
 } from "@/features/recipes/domain/recipe";
+import type { RecipeDocument } from "@/features/recipes/domain/recipe-knowledge";
 import {
   buildRecipePrompt,
   parseRecipeOutput,
@@ -24,7 +25,10 @@ export class GoogleGeminiRecipeGenerator implements RecipeGenerator {
     this.model = model || process.env.GEMINI_MODEL || "gemini-3.8-flash";
   }
 
-  async generate(request: RecipeRequest): Promise<RecipeResult> {
+  async generate(
+    request: RecipeRequest,
+    sourceRecipes: RecipeDocument[] = [],
+  ): Promise<RecipeResult> {
     if (!this.apiKey) {
       return generateFallbackResult(
         this.fallbackGenerator,
@@ -36,7 +40,7 @@ export class GoogleGeminiRecipeGenerator implements RecipeGenerator {
 
     try {
       const ai = new GoogleGenAI({ apiKey: this.apiKey });
-      const response = await this.sendWithTimeout(ai, request);
+      const response = await this.sendWithTimeout(ai, request, sourceRecipes);
       const outputText = response.text ?? "";
 
       return {
@@ -56,11 +60,12 @@ export class GoogleGeminiRecipeGenerator implements RecipeGenerator {
   private async sendWithTimeout(
     ai: GoogleGenAI,
     request: RecipeRequest,
+    sourceRecipes: RecipeDocument[],
   ) {
     return await Promise.race([
       ai.models.generateContent({
         model: request.model || this.model,
-        contents: buildRecipePrompt(request),
+        contents: buildRecipePrompt(request, sourceRecipes),
         config: {
           responseMimeType: "application/json",
           responseSchema: {

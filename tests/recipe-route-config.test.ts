@@ -1,19 +1,30 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { POST } from "../src/app/api/recipes/route";
+import recipeIndex from "../src/features/recipes/infrastructure/knowledge/recipe-index.json";
 
 const mockGenerateContent = vi.fn();
+const mockEmbedContent = vi.fn();
 
 vi.mock("@google/genai", () => {
   class MockGoogleGenAI {
     models = {
       generateContent: mockGenerateContent,
+      embedContent: mockEmbedContent,
     };
   }
   return {
     GoogleGenAI: MockGoogleGenAI,
   };
 });
+
+function stubEmbeddingResponse() {
+  const values = Array.from(
+    { length: recipeIndex.dimensions },
+    () => 0.1,
+  );
+  mockEmbedContent.mockResolvedValue({ embeddings: [{ values }] });
+}
 
 describe("recipe route provider config", () => {
   afterEach(() => {
@@ -25,6 +36,7 @@ describe("recipe route provider config", () => {
   it("uses the dedicated Gemini config", async () => {
     vi.stubEnv("GEMINI_API_KEY", "test-api-key");
     vi.stubEnv("GEMINI_MODEL", "test-gemini-model");
+    stubEmbeddingResponse();
 
     mockGenerateContent.mockResolvedValue({
       text: JSON.stringify({
@@ -82,6 +94,7 @@ describe("recipe route provider config", () => {
 
   it("propagates request-level model selection to Gemini", async () => {
     vi.stubEnv("GEMINI_API_KEY", "test-api-key");
+    stubEmbeddingResponse();
 
     mockGenerateContent.mockResolvedValue({
       text: JSON.stringify({
@@ -122,5 +135,40 @@ describe("recipe route provider config", () => {
     expect(mockGenerateContent).toHaveBeenCalled();
     const callArgs = mockGenerateContent.mock.calls[0]?.[0];
     expect(callArgs?.model).toBe("custom-selected-model");
+  });
+
+  it("adds knowledge base reference recipes to the Gemini prompt", async () => {
+    vi.stubEnv("GEMINI_API_KEY", "test-api-key");
+    stubEmbeddingResponse();
+
+    mockGenerateContent.mockResolvedValue({
+      text: JSON.stringify({
+        recipes: [
+          {
+            id: "ai-curry",
+            title: "AI curry",
+            burmeseTitle: "AI curry",
+            summary: "A simple curry.",
+            cookTimeMinutes: 30,
+            difficulty: "Easy",
+            matchingIngredients: ["chicken"],
+            missingIngredients: [],
+            steps: ["Cook the chicken."],
+            tips: ["Taste before serving."],
+          },
+        ],
+      }),
+    });
+
+    await POST(
+      new Request("http://localhost/api/recipes", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ ingredients: "chicken, onion", style: "family" }),
+      }),
+    );
+
+    const callArgs = mockGenerateContent.mock.calls[0]?.[0];
+    expect(String(callArgs?.contents)).toContain("Reference 1:");
   });
 });

@@ -136,4 +136,50 @@ describe("GoogleGeminiRecipeGenerator", () => {
     const callArgs = mockGenerateContent.mock.calls[0]?.[0];
     expect(callArgs?.model).toBe("gemini-3.8-flash");
   });
+
+  it("includes knowledge base source recipes in the Gemini prompt", async () => {
+    const mockResponse = {
+      text: JSON.stringify({
+        recipes: [
+          {
+            id: "test-id",
+            title: "Test Recipe",
+            burmeseTitle: "စမ်းသပ်ဟင်း",
+            summary: "Test Summary",
+            cookTimeMinutes: 20,
+            difficulty: "Easy",
+            matchingIngredients: ["egg"],
+            missingIngredients: [],
+            steps: ["Step 1"],
+            tips: ["Tip 1"],
+          }
+        ]
+      })
+    };
+
+    mockGenerateContent.mockResolvedValue(mockResponse);
+
+    const generator = new GoogleGeminiRecipeGenerator(
+      "test-api-key",
+      new LocalRecipeGenerator(),
+    );
+
+    await generator.generate({ ingredients: ["egg"], style: "any" }, [
+      {
+        id: "egg-rice",
+        title: "Burmese Egg Fried Rice",
+        burmeseTitle: "ထမင်းကြော်",
+        summary: "Simple fried rice.",
+        timeMinutes: 15,
+        difficulty: "Easy",
+        servings: 2,
+        ingredients: ["rice", "eggs"],
+        steps: ["Fry the rice."],
+        tags: ["quick"],
+      },
+    ]);
+
+    const callArgs = mockGenerateContent.mock.calls[0]?.[0];
+    expect(callArgs?.contents).toContain("Reference 1: Burmese Egg Fried Rice");
+  });
 });
